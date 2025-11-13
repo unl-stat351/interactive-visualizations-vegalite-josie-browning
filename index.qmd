@@ -1,8 +1,9 @@
 ---
 title: "Homework: Interactive Visualization with Vega-Lite"
-author: "Your Name"
+author: "Josie Browning"
 format: html
 theme: cosmo
+chache: false
 ---
 
 # Introduction
@@ -138,11 +139,13 @@ Plot.plot({
 
 Can you think of a better way to display this data, potentially using similar selectors? Describe the changes you'd make. 
 
-> 
+> I'd change this graph to polar coordinates so it looks more similar to a color wheel. The closer the point to the center, the lighter the point.
 
 Is your proposed graphic supported by vega-lite? Why or why not? (You can provide links to documentation/stackOverflow)
 
-> 
+> It seems like vega-lite does not have any built in handling of polar coordinates, but the first method that comes up upon researching is using Arc marks. It seems like this is what is used to create pie charts, and I think I could make areas/categories with the color points sectioned out. I would also need to make the actual arcs transparent/invisible since I only want to view the points and not the area lines.
+
+https://vega.github.io/vega-lite/docs/arc.html 
 
 
 ## Adding selectors
@@ -157,10 +160,11 @@ Wire your `maxSat2` selector to the plot, using the chunk below, which I've edit
 viewof space2 = Inputs.select(["HSL", "RGB"], {label: "Color space (axes)", value: "HSL"})
 // selector for color saturation/intensity
 viewof minSat2 = Inputs.range([0, 100], {label: "Min saturation (%)", value: 0, step: 1})
+viewof maxSat2 = Inputs.range([minSat2, 100], {label: "Max saturation (%)", value: 0, step: 1})
 
 
 // filter out points based on saturation
-filtered2 = colors.filter(d => d.s >= minSat2)
+filtered2 = colors.filter(d => d.s >= minSat2).filter(d => maxSat2 >= d.s)
 
 // Create an x variable that's conditional on what is selected,
 // changing both the values and the label accordingly
@@ -193,7 +197,6 @@ Plot.plot({
     )],
   x: {label: xLabel2, domain: space === "HSL" ? [0, 360] : [0, 255]},
   y: {label: yLabel2, domain: space === "HSL" ? [0, 100] : [0, 255]},
-  caption: space === "HSL" ? "Hue vs. Lightness (filtered by min saturation)." : "Red vs. Green (still filtered by HSL saturation)."
+  caption: space === "HSL" ? "Hue vs. Lightness (filtered by min and max saturation)." : "Red vs. Green (still filtered by HSL saturation)."
 })
 ```
-
